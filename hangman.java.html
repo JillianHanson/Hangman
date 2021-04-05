@@ -1,0 +1,320 @@
+<html>
+<head>
+<title>hangman.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #0033b3;}
+.s1 { color: #080808;}
+.s2 { color: #1750eb;}
+.s3 { color: #8c8c8c; font-style: italic;}
+.s4 { color: #067d17;}
+.s5 { color: #0037a6;}
+</style>
+</head>
+<body bgcolor="#ffffff">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+hangman.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.gamesgalore;</span>
+
+<span class="s0">import </span><span class="s1">android.annotation.SuppressLint;</span>
+<span class="s0">import </span><span class="s1">android.content.Context;</span>
+<span class="s0">import </span><span class="s1">android.content.Intent;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle;</span>
+<span class="s0">import </span><span class="s1">android.view.Gravity;</span>
+<span class="s0">import </span><span class="s1">android.view.View;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText;</span>
+<span class="s0">import </span><span class="s1">android.widget.ImageView;</span>
+<span class="s0">import </span><span class="s1">android.widget.LinearLayout;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView;</span>
+<span class="s0">import </span><span class="s1">android.widget.Toast;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity;</span>
+
+<span class="s0">import </span><span class="s1">java.io.BufferedReader;</span>
+<span class="s0">import </span><span class="s1">java.io.BufferedWriter;</span>
+<span class="s0">import </span><span class="s1">java.io.File;</span>
+<span class="s0">import </span><span class="s1">java.io.FileInputStream;</span>
+<span class="s0">import </span><span class="s1">java.io.FileNotFoundException;</span>
+<span class="s0">import </span><span class="s1">java.io.FileOutputStream;</span>
+<span class="s0">import </span><span class="s1">java.io.FileWriter;</span>
+<span class="s0">import </span><span class="s1">java.io.IOException;</span>
+<span class="s0">import </span><span class="s1">java.io.InputStreamReader;</span>
+<span class="s0">import </span><span class="s1">java.io.PrintWriter;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Files;</span>
+<span class="s0">import </span><span class="s1">java.nio.file.Paths;</span>
+<span class="s0">import </span><span class="s1">java.util.ArrayList;</span>
+<span class="s0">import </span><span class="s1">java.util.Arrays;</span>
+<span class="s0">import </span><span class="s1">java.util.Random;</span>
+
+<span class="s0">public class </span><span class="s1">hangman </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s1">ArrayList&lt;String&gt; alreadyGuessed = </span><span class="s0">new </span><span class="s1">ArrayList&lt;String&gt;();</span>
+    <span class="s0">private int </span><span class="s1">numOfErrors;</span>
+    <span class="s0">private int </span><span class="s1">allowedErrors = </span><span class="s2">9</span><span class="s1">;</span>
+    <span class="s1">ArrayList&lt;String&gt; letters = </span><span class="s0">new </span><span class="s1">ArrayList&lt;String&gt;();</span>
+    <span class="s1">ArrayList&lt;String&gt; theList = </span><span class="s0">new </span><span class="s1">ArrayList&lt;String&gt;();</span>
+    <span class="s1">ArrayList&lt;String&gt; rightWords = </span><span class="s0">new </span><span class="s1">ArrayList&lt;String&gt;();</span>
+    <span class="s0">int </span><span class="s1">count;</span>
+    <span class="s0">int </span><span class="s1">lettersLeft;</span>
+    <span class="s0">int </span><span class="s1">count2 = </span><span class="s2">0</span><span class="s1">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState);</span>
+        <span class="s1">setContentView(R.layout.activity_hangman);</span>
+
+        <span class="s1">readFile();</span>
+        <span class="s1">pickWord();</span>
+        <span class="s1">numOfErrors = </span><span class="s2">0</span><span class="s1">;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s3">// chooses a random word from the file and sets the lines for hangman</span>
+    <span class="s0">public void </span><span class="s1">pickWord() {</span>
+        <span class="s1">Random random = </span><span class="s0">new </span><span class="s1">Random();</span>
+        <span class="s0">int </span><span class="s1">x = theList.size();</span>
+        <span class="s0">int </span><span class="s1">Random = random.nextInt(x);</span>
+        <span class="s1">String newWord = theList.get(Random);</span>
+        <span class="s1">String[] word = newWord.split(</span><span class="s4">&quot;&quot;</span><span class="s1">);</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; word.length; i++) {</span>
+            <span class="s1">letters.add(word[i]);</span>
+        <span class="s1">}</span>
+        <span class="s1">TextView under = findViewById(R.id.under);</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; letters.size(); i++) {</span>
+            <span class="s0">if </span><span class="s1">(i == </span><span class="s2">0</span><span class="s1">) {</span>
+                <span class="s1">under.setText(</span><span class="s4">&quot;_&quot;</span><span class="s1">);</span>
+            <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                <span class="s1">String place = under.getText().toString();</span>
+                <span class="s1">under.setText(place + </span><span class="s4">&quot; _&quot;</span><span class="s1">);</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s1">lettersLeft = letters.size();</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//when the add word button is pressed</span>
+    <span class="s0">public void </span><span class="s1">addFile(View view) {</span>
+        <span class="s1">Button add = findViewById(R.id.addWord);</span>
+        <span class="s1">add.setVisibility(view.GONE);</span>
+        <span class="s1">Button guess = findViewById(R.id.guess);</span>
+        <span class="s1">guess.setVisibility(view.GONE);</span>
+        <span class="s1">EditText file = findViewById(R.id.addToFile);</span>
+        <span class="s1">file.setVisibility(view.VISIBLE);</span>
+        <span class="s1">Button Add = findViewById(R.id.add);</span>
+        <span class="s1">Add.setVisibility(view.VISIBLE);</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//checks if the word was already in the file so there are no repeats</span>
+    <span class="s0">public boolean </span><span class="s1">aRepeat() {</span>
+        <span class="s1">EditText list = findViewById(R.id.addToFile);</span>
+        <span class="s1">String entry = list.getText().toString();</span>
+        <span class="s1">String newEntry = entry.toLowerCase();</span>
+        <span class="s0">boolean </span><span class="s1">a = </span><span class="s0">false</span><span class="s1">;</span>
+        <span class="s0">if </span><span class="s1">(theList.size() == </span><span class="s2">0</span><span class="s1">) {</span>
+            <span class="s0">return </span><span class="s1">a;</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; theList.size(); i++) {</span>
+                <span class="s0">if </span><span class="s1">(theList.get(i).toLowerCase().equalsIgnoreCase(newEntry)) {</span>
+                    <span class="s1">a = </span><span class="s0">true</span><span class="s1">;</span>
+                    <span class="s0">break</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s0">return </span><span class="s1">a;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//when the player goes to add a word into the file of words to play with</span>
+    <span class="s0">public void </span><span class="s1">addLetter(View view) {</span>
+        <span class="s1">EditText list = findViewById(R.id.addToFile);</span>
+        <span class="s1">String entry = list.getText().toString();</span>
+        <span class="s1">entry.toUpperCase();</span>
+        <span class="s0">if </span><span class="s1">(entry.equals(</span><span class="s4">&quot;&quot;</span><span class="s1">)) {</span>
+            <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;No word was entered&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(aRepeat()) {</span>
+            <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;Word already in file&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">theList.add(entry.toUpperCase());</span>
+            <span class="s1">updateFile();</span>
+            <span class="s1">list.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">);</span>
+            <span class="s1">Button guess = findViewById(R.id.guess);</span>
+            <span class="s1">guess.setVisibility(View.VISIBLE);</span>
+            <span class="s1">Button addFile = findViewById(R.id.addWord);</span>
+            <span class="s1">addFile.setVisibility(View.VISIBLE);</span>
+            <span class="s1">Button addWord = findViewById(R.id.add);</span>
+            <span class="s1">addWord.setVisibility(View.GONE);</span>
+            <span class="s1">list.setVisibility(View.GONE);</span>
+            <span class="s1">Toast.makeText(</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;Word was added&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//when a player presses the button guess letter</span>
+    <span class="s0">public void </span><span class="s1">guessLetter(View view) {</span>
+        <span class="s1">LinearLayout guess = findViewById(R.id.keyBoard);</span>
+        <span class="s1">guess.setVisibility(view.VISIBLE);</span>
+        <span class="s1">Button add = findViewById(R.id.guess);</span>
+        <span class="s1">add.setVisibility(View.GONE);</span>
+        <span class="s1">Button file = findViewById(R.id.addWord);</span>
+        <span class="s1">file.setVisibility(View.GONE);</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//checks if the player has already guessed the letter that was just pressed</span>
+    <span class="s0">public boolean </span><span class="s1">isGuessed(String c) {</span>
+        <span class="s0">boolean </span><span class="s1">guessed = </span><span class="s0">false</span><span class="s1">;</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; alreadyGuessed.size(); i++) {</span>
+            <span class="s0">if </span><span class="s1">(alreadyGuessed.get(i).equals(c)) {</span>
+                <span class="s1">guessed = </span><span class="s0">true</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">guessed;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//counts the number of a certain letter that are in the word</span>
+    <span class="s0">public int </span><span class="s1">charCount(String c) {</span>
+        <span class="s0">int </span><span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; letters.size(); i++) {</span>
+            <span class="s0">if </span><span class="s1">(letters.get(i).equals(c)) {</span>
+                <span class="s1">count += </span><span class="s2">1</span><span class="s1">;</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">return </span><span class="s1">count;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@SuppressLint(</span><span class="s4">&quot;SetTextI18n&quot;</span><span class="s1">)</span>
+    <span class="s3">//when a letter is pressed</span>
+    <span class="s0">public void </span><span class="s1">enter(String c) {</span>
+        <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; letters.size(); i++) {</span>
+            <span class="s0">if </span><span class="s1">(letters.get(i).equals(c)) {</span>
+                <span class="s0">if </span><span class="s1">(isGuessed(c)) {</span>
+                    <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;Letter was already guessed.&quot;</span><span class="s1">, Toast.LENGTH_LONG).show();</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    <span class="s1">count2++;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+            <span class="s3">// when a wrong letter is guessed, adds it to the wrong letters text view</span>
+            <span class="s0">if </span><span class="s1">(i == letters.size() - </span><span class="s2">1 </span><span class="s1">&amp;&amp; count2 == </span><span class="s2">0 </span><span class="s1">&amp;&amp; !isGuessed(c)) {</span>
+                <span class="s1">numOfErrors++;</span>
+                <span class="s1">TextView wrong = findViewById(R.id.textView3);</span>
+                <span class="s1">String letters = wrong.getText().toString();</span>
+                <span class="s1">wrong.setText(letters + c + </span><span class="s4">&quot;, &quot;</span><span class="s1">);</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s1">count2 = </span><span class="s2">0</span><span class="s1">;</span>
+        <span class="s1">alreadyGuessed.add(c);</span>
+        <span class="s3">//when a correct letter is guessed, makes sure that the number of lines is right and that the</span>
+        <span class="s3">//letter is shown in the right place</span>
+        <span class="s0">if </span><span class="s1">(letters.contains(c) &amp;&amp; lettersLeft != -</span><span class="s2">1</span><span class="s1">) {</span>
+            <span class="s1">TextView under = findViewById(R.id.under);</span>
+            <span class="s1">under.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">);</span>
+            <span class="s0">int </span><span class="s1">times = charCount(c);</span>
+            <span class="s1">lettersLeft = lettersLeft - times;</span>
+            <span class="s1">rightWords.add(c);</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j = </span><span class="s2">0</span><span class="s1">; j &lt; letters.size(); j++) {</span>
+                <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">h = </span><span class="s2">0</span><span class="s1">; h &lt; rightWords.size(); h++) {</span>
+                    <span class="s1">String place = under.getText().toString();</span>
+                    <span class="s0">if </span><span class="s1">(rightWords.get(h).equals(letters.get(j))) {</span>
+                        <span class="s1">under.setText(place + </span><span class="s4">&quot; &quot; </span><span class="s1">+ rightWords.get(h));</span>
+                        <span class="s1">count++;</span>
+                    <span class="s1">}</span>
+                    <span class="s0">if </span><span class="s1">(count != </span><span class="s2">0</span><span class="s1">) {</span>
+                        <span class="s1">h = rightWords.size() - </span><span class="s2">1</span><span class="s1">;</span>
+                    <span class="s1">}</span>
+                    <span class="s0">if </span><span class="s1">(h == rightWords.size() - </span><span class="s2">1 </span><span class="s1">&amp;&amp; (!rightWords.get(h).equals(letters.get(j))) &amp;&amp; count == </span><span class="s2">0</span><span class="s1">) {</span>
+                        <span class="s1">under.setText(place + </span><span class="s4">&quot; _&quot;</span><span class="s1">);</span>
+                    <span class="s1">}</span>
+                    <span class="s1">count = </span><span class="s2">0</span><span class="s1">;</span>
+                <span class="s1">}</span>
+            <span class="s1">}</span>
+        <span class="s1">}</span>
+        <span class="s0">if </span><span class="s1">(lettersLeft == </span><span class="s2">0 </span><span class="s1">&amp;&amp; numOfErrors != </span><span class="s2">9</span><span class="s1">) {</span>
+            <span class="s1">Intent i = </span><span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this</span><span class="s1">, reset.</span><span class="s0">class</span><span class="s1">);</span>
+            <span class="s1">String yay = </span><span class="s4">&quot;Congratulations You Won!&quot;</span><span class="s1">;</span>
+            <span class="s1">i.putExtra(</span><span class="s4">&quot;Hello&quot;</span><span class="s1">, yay);</span>
+            <span class="s1">startActivity(i);</span>
+        <span class="s1">}</span>
+        <span class="s3">//when a wrong letter is guessed it will draw a part of the hangman</span>
+        <span class="s0">if </span><span class="s1">(numOfErrors == </span><span class="s2">1</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.head);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">2</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView3);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">3</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView4);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">4</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView5);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">5</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView6);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">6</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView7);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">7</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView8);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">8</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView9);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+        <span class="s1">} </span><span class="s0">else if </span><span class="s1">(numOfErrors == </span><span class="s2">9 </span><span class="s1">&amp;&amp; lettersLeft != </span><span class="s2">0</span><span class="s1">) {</span>
+            <span class="s1">ImageView man = findViewById(R.id.imageView10);</span>
+            <span class="s1">man.setVisibility(View.VISIBLE);</span>
+            <span class="s1">Intent i = </span><span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this</span><span class="s1">, reset.</span><span class="s0">class</span><span class="s1">);</span>
+            <span class="s1">String sad = </span><span class="s4">&quot;You Lost :( &quot;</span><span class="s1">;</span>
+            <span class="s1">i.putExtra(</span><span class="s4">&quot;Hello&quot;</span><span class="s1">, sad);</span>
+            <span class="s1">startActivity(i);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//happens when a letter is pressed</span>
+    <span class="s0">public void </span><span class="s1">touchLetter(View view) {</span>
+        <span class="s0">if </span><span class="s1">(numOfErrors &lt; allowedErrors) {</span>
+            <span class="s1">String letter = ((Button) view).getText().toString();</span>
+            <span class="s1">enter(letter);</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//will update the file to add the word that was added to the file</span>
+    <span class="s0">public void </span><span class="s1">updateFile() {</span>
+        <span class="s0">try </span><span class="s1">{</span>
+            <span class="s1">FileOutputStream fis = </span><span class="s0">this</span><span class="s1">.openFileOutput(</span><span class="s4">&quot;hangman.txt&quot;</span><span class="s1">, Context.MODE_PRIVATE);</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = </span><span class="s2">0</span><span class="s1">; i &lt; theList.size(); i++) {</span>
+                <span class="s1">String toWrite = theList.get(i).concat(</span><span class="s4">&quot;</span><span class="s5">\n</span><span class="s4">&quot;</span><span class="s1">);</span>
+                <span class="s1">String file = theList.get(i).concat(</span><span class="s4">&quot;</span><span class="s5">\n</span><span class="s4">&quot;</span><span class="s1">);</span>
+                <span class="s1">fis.write(toWrite.getBytes());</span>
+                <span class="s1">fis.write(file.getBytes());</span>
+
+            <span class="s1">}</span>
+            <span class="s1">fis.close();</span>
+        <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+            <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;problem with file&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+
+    <span class="s3">//reads the file and puts all the words into an array list</span>
+    <span class="s0">public void </span><span class="s1">readFile() {</span>
+        <span class="s1">File file = getBaseContext().getFileStreamPath(</span><span class="s4">&quot;hangman.txt&quot;</span><span class="s1">);</span>
+        <span class="s0">if </span><span class="s1">(file.exists()) {</span>
+            <span class="s0">try </span><span class="s1">{</span>
+                <span class="s1">FileInputStream fis = </span><span class="s0">this</span><span class="s1">.openFileInput(</span><span class="s4">&quot;hangman.txt&quot;</span><span class="s1">);</span>
+                <span class="s1">InputStreamReader inputStreamReader = </span><span class="s0">new </span><span class="s1">InputStreamReader(fis);</span>
+                <span class="s1">BufferedReader bf = </span><span class="s0">new </span><span class="s1">BufferedReader(inputStreamReader);</span>
+                <span class="s3">// read lines and put them in arrayList</span>
+                <span class="s1">String line;</span>
+                <span class="s0">while </span><span class="s1">((line = bf.readLine()) != </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s1">theList.add(line);</span>
+                    <span class="s1">bf.readLine();</span>
+                <span class="s1">}</span>
+            <span class="s1">} </span><span class="s0">catch </span><span class="s1">(Exception e) {</span>
+                <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;We should not get here&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+            <span class="s1">}</span>
+        <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+            <span class="s1">Toast.makeText(hangman.</span><span class="s0">this</span><span class="s1">, </span><span class="s4">&quot;This file does not exist&quot;</span><span class="s1">, Toast.LENGTH_SHORT).show();</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span>
+<span class="s1">}</span></pre>
+</body>
+</html>
